@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include <stdio.h> // printf()
+#include <stdlib.h> //exit()
+#include <unistd.h> // fork() pipe() write() read()
 #include <sys/wait.h>
 
 int main(){
@@ -16,23 +16,23 @@ if (homero == 0) {
     pid_t bart = fork();      // Homero crea a Bart
     if (bart == 0) {
         printf("Bart\n");
-        exit(0);            // Bart termina aquí — no hace más forks, 
+        exit(EXIT_SUCCESS);            // Bart termina aquí — no hace más forks, 
     }                       // si lo saco, entonces dos procesos van a ejecutar lo que sigue
 
     pid_t lisa = fork();      // Homero crea a Lisa
     if (lisa == 0) {
         printf("Lisa\n");
-        exit(0);            // Lisa termina aquí
+        exit(EXIT_SUCCESS);            // Lisa termina aquí
     }
 
     pid_t maggie = fork();    // Homero crea a Maggie
     if (maggie == 0) {
         printf("Maggie\n");
-        exit(0);            // Maggie termina aquí
+        exit(EXIT_SUCCESS);            // Maggie termina aquí
     }
 
-    exit(0);                // Homero termina
+    exit(EXIT_SUCCESS);                // Homero termina
 }
 
-exit(0);                    // Abraham termina
+exit(EXIT_SUCCESS);                    // Abraham termina
 }

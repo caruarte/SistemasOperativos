@@ -15,13 +15,12 @@ void system(const char *arg) { //system(cmd) ejecuta un comando en un proceso hi
 
         // Si exec() falla, el hijo termina con error
         // (si exec tiene éxito, esta línea nunca se ejecuta)
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     // Soy el padre — espero a que el hijo termine
     waitpid(hijo, NULL, 0);
-    exit(0)
 
     // Cuando waitpid retorna, el hijo ya terminó
-    // y system() retorna al llamador
+    // y system() retorna al llamador, no se hace exit
 }

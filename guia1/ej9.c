@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <signal.h>
+#include <signal.h> // señales
 #include <sys/wait.h>
 
 // Flag volátil: se activa cuando llega SIGUSR1
-volatile sig_atomic_t señal_recibida = 0;
+int señal_recibida = 0;
 
 void handler(int sig) {
     señal_recibida = 1;
@@ -47,8 +47,7 @@ int main() {
             }
 
             // Preguntar al usuario
-            printf("¿Querés finalizar? (si/no): ");
-            fflush(stdout);
+            printf("¿Querés finalizar? (si/xno): ");
             scanf("%s", respuesta);
 
             if (respuesta[0] == 's') {
