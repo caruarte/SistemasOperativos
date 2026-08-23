@@ -27,7 +27,7 @@ int main() {
     }
 
     // Juan espera a que Julieta termine
-    waitpid(julieta, NULL, 0);  // wait4 en el strace
+    waitpid(-1, NULL, 0);  // wait4 en el strace
 
     pid_t jorge = fork();       // nace 10558
 
