@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+
+// Se podria refactorizar los envios de mensajes pq esta lleno de codigo repetido
+
+void padre(pid_t pid_hijo_1, pid_t pid_hijo_2){
+    // Lo primero que tengo que hacer es mandarle a Hijo_1 el pid del hijo_2.
+    bsend(pid_hijo_1, pid_hijo_2);
+    int valor_a_enviar = 0;
+    int proximo_valor_a_enviar = 3;
+    bsend(pid_hijo_1, valor_a_enviar);
+    while (proximo_valor_a_enviar <= 50)    {
+        
+        // Mando el mensaje y espero a que me respondan
+        valor_a_enviar = breceive(pid_hijo_2); // Recibe un mensaje del proceso src. Es bloqueante
+        valor_a_enviar++;
+        printf("Proceso Padre envia a proceso Hijo 1 el valor %d \n", valor_a_enviar);
+        bsend(pid_hijo_1, valor_a_enviar);
+        proximo_valor_a_enviar = proximo_valor_a_enviar + 3;
+    }
+    breceive(pid_hijo_2); // recibe el nro 50 ultimo del hijo 2
+}
+
+void hijo_1(pid_t pid_padre){
+    // Lo primero que tengo que hacer es esperar a que el padre me mande el valor del pid del hijo 2
+    pid_t pid_hijo_2 = breceive(pid_padre);
+    int valor_a_enviar = 0;
+    int proximo_valor_a_enviar = 1;
+    while (proximo_valor_a_enviar <= 50)    {
+        valor_a_enviar = breceive(pid_padre);
+        valor_a_enviar++;
+        printf("Proceso Hijo 1 envia a proceso Hijo 2 el valor %d \n", valor_a_enviar);
+        bsend(pid_hijo_2, valor_a_enviar);
+        proximo_valor_a_enviar = proximo_valor_a_enviar + 3;
+    }
+    exit(EXIT_SUCCESS);
+}
+
+void hijo_2(pid_t pid_hijo_1, pid_t pid_padre){
+    int valor_a_enviar = 0;
+    int proximo_valor_a_enviar = 2;
+    while (proximo_valor_a_enviar <= 50){
+        valor_a_enviar = breceive(pid_hijo_1);
+        valor_a_enviar++;
+        printf("Proceso Hijo 2 envia a proceso Padre el valor %d \n", valor_a_enviar);
+        bsend(pid_padre, valor_a_enviar);
+        proximo_valor_a_enviar = proximo_valor_a_enviar + 3;
+    }
+    exit(EXIT_SUCCESS);
+}
+
+int main(){
+    pid_t pid_padre = get_current_pid();
+    pid_t pid_hijo_1 = fork();
+    if(pid_hijo_1 != 0){
+        // Estoy en el padre
+        pid_t pid_hijo_2 = fork();
+        if(pid_hijo_2 == 0){
+            hijo_2(pid_hijo_1, pid_padre);
+        }
+        else{
+            padre(pid_hijo_1, pid_hijo_2);
+        }
+    }
+    else{
+        hijo_1(pid_padre);
+    }
+    wait(NULL);
+    wait(NULL);
+    exit(EXIT_SUCCESS);
+}
